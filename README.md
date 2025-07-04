@@ -63,5 +63,5 @@ qemu-system-x86_64 -M q35 -m 8192M -cdrom [ISO path] -serial stdio -boot d -smp 
 
 Since the entire root filesystem (rootfs) resides in the ramdisk, a minimum of 8 gigabytes of memory is needed for the entire userspace. If you do not have the required memory free, you can use `userspace-base` instead of `userspace-full`.
 
-We intend to move the rootfs to disk in future updates, but for now, you need to allocate a minimum of 8 
+
 
