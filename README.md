@@ -1,6 +1,6 @@
 # D4Cos
 Note:Still under development...
-D4Cos is an UNIX-like kernel written in C, which uses Limine as its default bootloader and boot protocol.
+# D4Cos is an UNIX-like kernel written in C, which uses Limine as its default bootloader and boot protocol.
 
 # Building and Running
 
