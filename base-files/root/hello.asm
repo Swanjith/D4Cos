@@ -6,7 +6,7 @@ _start:
 	mov rax, 1
 	mov rdi, 1
 	mov rsi, msg
-	mov rdx, msg_length
+	mov rdx,  msg_length
 	syscall
 
 	mov rax, 60
