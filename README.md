@@ -51,7 +51,7 @@ Run `make` from the repository's root to generate the ISO image:
 make
 ```
 
-## 4. Running Polaris OS
+## 4. Running D4Cos
 
 It is highly recommended to use QEMU for ease of use. Below is an example command to run Polaris:
 
