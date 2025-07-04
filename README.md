@@ -23,12 +23,6 @@ Install the following packages:
 
 ### 3.1. Clone the Repository
 
-Clone the Polaris OS repository, ensuring to include submodules:
-
-```bash
-git clone --recurse-submodules [repository_url]
-```
-
 ### 3.2. Prepare Userspace
 
 *   **Download Jinx Script:** Navigate to the repository's root and run `make jinx` to download the jinx script, which is used for building  userspace.
