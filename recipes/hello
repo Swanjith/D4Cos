@@ -1,0 +1,21 @@
+name=hello
+from_source=hello
+revision=1
+hostdeps="gcc autoconf automake libtool pkg-config"
+deps="core-libs"
+imagedeps="libiconv"
+
+build() {
+    cp -rp "${source_dir}"/. ./
+
+        configure_script_path=./configure \
+    autotools_configure
+
+    make -j${parallelism}
+}
+
+package() {
+    DESTDIR="${dest_dir}" make install
+
+    post_package_strip
+}

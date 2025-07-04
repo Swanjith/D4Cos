@@ -1,0 +1,4 @@
+name=micropython
+version=1.22.0
+tarball_url="https://github.com/Neptune650/micropython-polaris/archive/e930e7f682d53199757b219bc4441aeeaffc707b.tar.gz"
+tarball_blake2b="de648a850623885b99571edfdd08c4c2384b76bcecebd4c1693593bd01cacc9c88596147de0bd6167a4a09705b22815e1a9e16759c34e12f87a645045e43bd6f"

@@ -1,0 +1,23 @@
+name=gcon
+version=9b8ffa17c476e661caee4ea57f05becc224cd912
+revision=1
+tarball_url="https://codeberg.org/Ironclad/gcon/archive/${version}.tar.gz"
+tarball_blake2b="04659ba488885db9cd54c4d3f881fedb779cf2b5fa8ca0ebc35d269967f84d4a1958bde40e056d5eb2d78765790aea86fe03fd6395d585a3572f306aa14f7725"
+source_imagedeps="git"
+source_hostdeps="automake autoconf libtool pkg-config"
+source_allow_network="yes"
+hostdeps="gcc autoconf automake libtool pkg-config"
+deps="core-libs"
+
+prepare() {
+    ./bootstrap
+}
+
+build() {
+    autotools_configure
+    make -j${parallelism}
+}
+
+package() {
+    DESTDIR="${dest_dir}" make install
+}

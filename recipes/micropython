@@ -1,0 +1,20 @@
+name=micropython
+from_source=micropython
+revision=1
+imagedeps="git python gcc"
+hostdeps="gcc automake pkg-config"
+deps="core-libs"
+
+build() {
+	cp -rp "${source_dir}"/. ./
+	cd ./ports/minimal
+	make clean
+	make CC=${OS_TRIPLET}-gcc -j${parallelism}
+}
+
+package() {
+	cd ./ports/minimal/build
+	mkdir -p "${dest_dir}/usr/bin"
+	mv ./firmware.elf ./micropython
+	cp ./micropython "${dest_dir}/usr/bin"
+}

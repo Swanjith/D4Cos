@@ -1,0 +1,23 @@
+name=oneko
+version=0.0
+revision=1
+tarball_url="https://github.com/tie/oneko/archive/5bbb5113fb30eda4dc5ba74718b2de1979139587.tar.gz"
+tarball_blake2b="783d10363c2bc37381dc2d4f5bc8e28d7b471cd2b0e6eb2dbbe0b6f5b301595c5235549de8d8264aca3626b75c52ce946931727264042df59f9e5917068fdaa4"
+source_hostdeps="automake autoconf libtool pkg-config"
+source_deps="xorg-util-macros gettext"
+hostdeps="gcc autoconf automake libtool pkg-config"
+deps="core-libs libx11 libxext"
+
+prepare() {
+	true
+}
+
+build() {
+	cp -rp "${source_dir}"/. ./
+	${OS_TRIPLET}-gcc -Wno-parentheses -std=c11 -pedantic -D_DEFAULT_SOURCE oneko.c -o oneko -lc -lm -lX11 -lXext
+}
+
+package() {
+	mkdir -vp "${dest_dir}/usr/bin"
+	cp -v oneko "${dest_dir}/usr/bin"
+}

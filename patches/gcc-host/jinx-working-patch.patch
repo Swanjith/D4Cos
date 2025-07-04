@@ -1,0 +1,166 @@
+diff --color -urN --no-dereference gcc-host-clean/fixincludes/mkfixinc.sh gcc-host-modified/fixincludes/mkfixinc.sh
+--- gcc-host-clean/fixincludes/mkfixinc.sh	2025-04-25 03:17:59.000000000 -0500
++++ gcc-host-modified/fixincludes/mkfixinc.sh	2025-06-19 13:16:07.095660783 -0500
+@@ -13,6 +13,7 @@
+ case $machine in
+     i?86-*-cygwin* | \
+     *-mingw32* | \
++    x86_64-*polaris* | \
+     powerpc-*-eabisim* | \
+     powerpc-*-eabi*    | \
+     powerpc-*-rtems*   | \
+diff --color -urN --no-dereference gcc-host-clean/gcc/config/polaris.h gcc-host-modified/gcc/config/polaris.h
+--- gcc-host-clean/gcc/config/polaris.h	1969-12-31 19:00:00.000000000 -0500
++++ gcc-host-modified/gcc/config/polaris.h	2025-06-19 13:05:16.813418634 -0500
+@@ -0,0 +1,29 @@
++#undef TARGET_POLARIS
++#define TARGET_POLARIS 1
++
++#undef LIB_SPEC
++#define LIB_SPEC "-lc"
++
++#undef STARTFILE_SPEC
++#define STARTFILE_SPEC "%{!shared:crt0.o%s} crti.o%s %{shared:crtbeginS.o%s;:crtbegin.o%s}"
++
++#undef ENDFILE_SPEC
++#define ENDFILE_SPEC "%{shared:crtendS.o%s;:crtend.o%s} crtn.o%s"
++
++#define GNU_USER_LINK_EMULATION32 "elf_i386"
++#define GNU_USER_LINK_EMULATION64 "elf_x86_64"
++#define GNU_USER_LINK_EMULATIONX32 "elf32_x86_64"
++
++#define GNU_USER_DYNAMIC_LINKER32 "/usr/lib/ld_i386.so"
++#define GNU_USER_DYNAMIC_LINKER64 "/usr/lib/ld.so"
++#define GNU_USER_DYNAMIC_LINKERX32 "/usr/lib/ld32.so"
++
++#undef TARGET_OS_CPP_BUILTINS
++#define TARGET_OS_CPP_BUILTINS()         \
++  do {                                   \
++    builtin_define ("__polaris__");      \
++    builtin_define ("__unix__");         \
++    builtin_assert ("system=polaris");   \
++    builtin_assert ("system=unix");      \
++    builtin_assert ("system=posix");     \
++  } while (0);
+diff --color -urN --no-dereference gcc-host-clean/gcc/config.gcc gcc-host-modified/gcc/config.gcc
+--- gcc-host-clean/gcc/config.gcc	2025-04-25 03:18:00.000000000 -0500
++++ gcc-host-modified/gcc/config.gcc	2025-06-19 13:08:33.558903008 -0500
+@@ -187,7 +187,7 @@
+ #			the --with-sysroot configure option or the
+ #			--sysroot command line option is used this
+ #			will be relative to the sysroot.
+-# target_type_format_char 
++# target_type_format_char
+ # 			The default character to be used for formatting
+ #			the attribute in a
+ #			.type symbol_name, ${t_t_f_c}<property>
+@@ -879,6 +879,15 @@
+   rust_target_objs="${rust_target_objs} freebsd-rust.o"
+   target_has_targetrustm=yes
+   ;;
++*-*-polaris*)
++  extra_options="$extra_options gnu-user.opt"
++  gas=yes
++  gnu_ld=yes
++  default_use_cxa_atexit=yes
++  use_gcc_stdint=wrap
++  tmake_file="${tmake_file} t-slibgcc"
++  thread_file='posix'
++  ;;
+ *-*-fuchsia*)
+   native_system_header_dir=/include
+   tmake_file="t-fuchsia"
+@@ -2320,6 +2329,9 @@
+ 			;;
+ 	esac
+ 	;;
++x86_64-*-polaris*)
++	tm_file="${tm_file} i386/unix.h i386/att.h elfos.h gnu-user.h glibc-stdint.h i386/x86-64.h i386/gnu-user-common.h i386/gnu-user64.h polaris.h"
++	;;
+ x86_64-*-fuchsia*)
+ 	tmake_file="${tmake_file} i386/t-x86_64-elf"
+ 	tm_file="${tm_file} i386/unix.h i386/att.h elfos.h newlib-stdint.h i386/i386elf.h i386/x86-64.h fuchsia.h"
+diff --color -urN --no-dereference gcc-host-clean/libgcc/config.host gcc-host-modified/libgcc/config.host
+--- gcc-host-clean/libgcc/config.host	2025-04-25 03:18:04.000000000 -0500
++++ gcc-host-modified/libgcc/config.host	2025-06-19 13:11:35.395148516 -0500
+@@ -106,7 +106,7 @@
+ 	;;
+ avr-*-*)
+ 	cpu_type=avr
+-	;;    
++	;;
+ bfin*-*)
+ 	cpu_type=bfin
+ 	;;
+@@ -310,6 +310,11 @@
+   tmake_file="$tmake_file t-crtstuff-pic t-libgcc-pic t-eh-dw2-dip t-slibgcc t-slibgcc-fuchsia"
+   extra_parts="crtbegin.o crtend.o"
+   ;;
++*-*-polaris*)
++  extra_parts="$extra_parts crti.o crtbegin.o crtbeginS.o crtend.o crtendS.o crtn.o"
++  tmake_file="$tmake_file t-crtstuff-pic"
++  tmake_file="$tmake_file t-slibgcc t-slibgcc-gld t-slibgcc-elf-ver t-libgcc-pic"
++  ;;
+ *-*-linux* | frv-*-*linux* | *-*-kfreebsd*-gnu | *-*-gnu* | *-*-kopensolaris*-gnu | *-*-uclinuxfdpiceabi)
+   tmake_file="$tmake_file t-crtstuff-pic t-libgcc-pic t-eh-dw2-dip t-slibgcc t-slibgcc-gld t-slibgcc-elf-ver t-linux"
+   extra_parts="crtbegin.o crtbeginS.o crtbeginT.o crtend.o crtendS.o"
+@@ -767,6 +772,10 @@
+ x86_64-*-fuchsia*)
+ 	tmake_file="$tmake_file t-libgcc-pic"
+ 	;;
++x86_64-*-polaris*)
++	extra_parts="$extra_parts crtprec32.o crtprec64.o crtprec80.o crtfastmath.o"
++	tmake_file="$tmake_file i386/t-crtpc t-crtfm i386/t-crtstuff t-dfprules"
++	;;
+ i[34567]86-*-dragonfly*)
+ 	tmake_file="${tmake_file} i386/t-dragonfly i386/t-crtstuff"
+ 	md_unwind_header=i386/dragonfly-unwind.h
+diff --color -urN --no-dereference gcc-host-clean/libstdc++-v3/crossconfig.m4 gcc-host-modified/libstdc++-v3/crossconfig.m4
+--- gcc-host-clean/libstdc++-v3/crossconfig.m4	2025-04-25 03:18:05.000000000 -0500
++++ gcc-host-modified/libstdc++-v3/crossconfig.m4	2025-06-19 13:16:17.575780456 -0500
+@@ -90,7 +90,7 @@
+ 
+   *-freebsd*)
+     SECTION_FLAGS='-ffunction-sections -fdata-sections'
+-    AC_SUBST(SECTION_FLAGS) 
++    AC_SUBST(SECTION_FLAGS)
+     GLIBCXX_CHECK_LINKER_FEATURES
+     AC_DEFINE(HAVE_SETENV)
+     AC_DEFINE(HAVE_FINITEF)
+@@ -136,6 +136,18 @@
+     AC_CHECK_FUNCS(uselocale)
+     ;;
+ 
++  *-polaris*)
++    GLIBCXX_CHECK_COMPILER_FEATURES
++    GLIBCXX_CHECK_LINKER_FEATURES
++    GLIBCXX_CHECK_MATH_SUPPORT
++    GLIBCXX_CHECK_STDLIB_SUPPORT
++    AC_DEFINE(_GLIBCXX_USE_DEV_RANDOM)
++    AC_DEFINE(_GLIBCXX_USE_RANDOM_TR1)
++    GCC_CHECK_TLS
++    AC_CHECK_FUNCS(aligned_alloc posix_memalign memalign _aligned_malloc)
++    AC_CHECK_FUNCS(timespec_get)
++    ;;
++
+   *-fuchsia*)
+     SECTION_FLAGS='-ffunction-sections -fdata-sections'
+     AC_SUBST(SECTION_FLAGS)
+@@ -200,7 +212,7 @@
+     ;;
+   *-netbsd* | *-openbsd*)
+     SECTION_FLAGS='-ffunction-sections -fdata-sections'
+-    AC_SUBST(SECTION_FLAGS) 
++    AC_SUBST(SECTION_FLAGS)
+     GLIBCXX_CHECK_LINKER_FEATURES
+     AC_DEFINE(HAVE_FINITEF)
+     AC_DEFINE(HAVE_FINITE)
+@@ -221,7 +233,7 @@
+     ;;
+   *-qnx6.1* | *-qnx6.2*)
+     SECTION_FLAGS='-ffunction-sections -fdata-sections'
+-    AC_SUBST(SECTION_FLAGS) 
++    AC_SUBST(SECTION_FLAGS)
+     GLIBCXX_CHECK_LINKER_FEATURES
+     AC_DEFINE(HAVE_COSF)
+     AC_DEFINE(HAVE_COSL)

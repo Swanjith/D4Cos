@@ -1,0 +1,22 @@
+name=coreutils
+from_source=coreutils
+revision=1
+hostdeps="gcc automake autoconf libtool pkg-config"
+deps="core-libs tzdata"
+imagedeps="build-essential gperf"
+
+build() {
+    cp -rp "${source_dir}"/. ./
+
+        configure_script_path=./configure \
+        CFLAGS="-DSLOW_BUT_NO_HACKS $CFLAGS" \
+    autotools_configure
+
+    make -j${parallelism}
+}
+
+package() {
+    DESTDIR="${dest_dir}" make install
+
+    post_package_strip
+}

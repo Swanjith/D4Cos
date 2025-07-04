@@ -1,0 +1,19 @@
+name=lua
+from_source=lua
+revision=1
+hostdeps="gcc automake pkg-config"
+deps="core-libs"
+
+build() {
+	cp -rp "${source_dir}"/. ./
+	sed -i "9s/.*/CC= ${OS_TRIPLET}-gcc -std=gnu99/" src/Makefile
+	sed -i "14s/.*/AR= ${OS_TRIPLET}-ar rcu/" src/Makefile
+	sed -i "15s/.*/RANLIB= ${OS_TRIPLET}-ranlib/" src/Makefile
+	make generic -j${parallelism}
+}
+
+package() {
+	cd ./src
+	mkdir -p "${dest_dir}/usr/bin"
+	cp ./lua "${dest_dir}/usr/bin"
+}

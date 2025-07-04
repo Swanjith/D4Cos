@@ -1,0 +1,16 @@
+name=busybox
+from_source=busybox
+revision=1
+hostdeps="gcc"
+deps="core-libs"
+imagedeps="build-essential"
+
+build() {
+	cp -rp "${source_dir}"/. ./
+	make CROSS_COMPILE="${OS_TRIPLET}-" -j${parallelism}
+}
+
+package() {
+	mkdir -p "${dest_dir}/usr/bin"
+	cp ./busybox "${dest_dir}/usr/bin/"
+}

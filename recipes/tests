@@ -1,0 +1,37 @@
+name=tests
+version=0.0
+revision=1
+source_dir="tests"
+hostdeps="gcc autoconf automake libtool pkg-config"
+deps="core-libs"
+
+build() {
+    cp -rp "${source_dir}"/. ./
+    ${OS_TRIPLET}-gcc client_sock.c -o client_sock
+    ${OS_TRIPLET}-gcc server_sock.c -o server_sock
+    ${OS_TRIPLET}-g++ cpuinfo.cxx -o cpuinfo
+    ${OS_TRIPLET}-gcc sched_hell.c -o sched_hell
+    ${OS_TRIPLET}-gcc waitpid.c -o waitpid
+    ${OS_TRIPLET}-gcc waitpid_nohang.c -o waitpid_nohang
+    ${OS_TRIPLET}-gcc getpid.c -o getpid
+    ${OS_TRIPLET}-gcc fork_bomb.c -o fork_bomb
+    ${OS_TRIPLET}-gcc execve.c -o execve
+    ${OS_TRIPLET}-gcc fork_execve.c -o fork_execve
+    ${OS_TRIPLET}-gcc pthread.c -o pthread -lpthread
+}
+
+package() {
+    mkdir -p "${dest_dir}/root"
+    mkdir -p "${dest_dir}/usr/bin/"
+    cp ./client_sock "${dest_dir}/root/client_sock"
+    cp ./server_sock "${dest_dir}/root/server_sock"
+    cp ./cpuinfo "${dest_dir}/usr/bin/cpuinfo"
+    cp ./sched_hell "${dest_dir}/root/sched_hell"
+    cp ./waitpid "${dest_dir}/root/waitpid"
+    cp ./waitpid_nohang "${dest_dir}/root/waitpid_nohang"
+    cp ./getpid "${dest_dir}/root/getpid"
+    cp ./fork_bomb "${dest_dir}/root/fork_bomb"
+    cp ./execve "${dest_dir}/root/execve"
+    cp ./fork_execve "${dest_dir}/root/fork_execve"
+    cp ./pthread "${dest_dir}/root/pthread"
+}

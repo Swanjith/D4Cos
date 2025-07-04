@@ -1,0 +1,4 @@
+name=automake
+version=1.18
+tarball_url="https://ftpmirror.gnu.org/gnu/automake/automake-${version}.tar.gz"
+tarball_blake2b="0aaa343fec4dfabfe5a1cc93a76d71f661d39a3245149f7387a15b4b24a9a89648b90afee354d37aa9966470dafc9f7f9de0d1e54529a207e52de33ee9721bd9"

@@ -1,0 +1,125 @@
+diff --git a/libtoolize.in b/libtoolize.in
+index 6c15aa57..4f4d4f0c 100644
+--- a/libtoolize.in
++++ b/libtoolize.in
+@@ -1922,7 +1922,7 @@ func_require_seen_libtool ()
+   # Do not remove config.guess, config.sub or install-sh, we don't
+   # install them without --install, and the project may not be using
+   # Automake.  Similarly, do not remove Gnulib files.
+-  all_pkgaux_files="compile depcomp missing ltmain.sh"
++  all_pkgaux_files=""
+   all_pkgmacro_files="libtool.m4 ltargz.m4 ltdl.m4 ltoptions.m4 ltsugar.m4 ltversion.in ltversion.m4 lt~obsolete.m4"
+   all_pkgltdl_files="COPYING.LIB Makefile Makefile.in Makefile.inc Makefile.am README acinclude.m4 aclocal.m4 argz_.h argz.c config.h.in config-h.in configure configure.ac configure.in libltdl/lt__alloc.h libltdl/lt__argz.h libltdl/lt__dirent.h libltdl/lt__glibc.h libltdl/lt__private.h libltdl/lt__strl.h libltdl/lt_dlloader.h libltdl/lt_error.h libltdl/lt_system.h libltdl/slist.h loaders/dld_link.c loaders/dlopen.c loaders/dyld.c loaders/load_add_on.c loaders/loadlibrary.c loaders/preopen.c loaders/shl_load.c lt__alloc.c lt__argz.c lt__dirent.c lt__strl.c lt_dlloader.c lt_error.c ltdl.c ltdl.h ltdl.mk slist.c"
+ 
+diff --git a/m4/libtool.m4 b/m4/libtool.m4
+index 8d323b3e..ee2c5ad2 100644
+--- a/m4/libtool.m4
++++ b/m4/libtool.m4
+@@ -1725,7 +1725,7 @@ AC_CACHE_VAL([lt_cv_sys_max_cmd_len], [dnl
+     lt_cv_sys_max_cmd_len=12288;    # 12K is about right
+     ;;
+ 
+-  gnu* | ironclad*)
++  gnu* | ironclad* | polaris*)
+     # Under GNU Hurd and Ironclad, this test is not required because there
+     # is no limit to the length of command line arguments.
+     # Libtool will interpret -1 as no limit whatsoever
+@@ -2996,6 +2996,18 @@ netbsd*)
+   hardcode_into_libs=yes
+   ;;
+ 
++polaris*)
++  version_type=linux # correct to gnu/linux during the next big refactor
++  need_lib_prefix=no
++  need_version=no
++  library_names_spec='$libname$release$shared_ext$versuffix $libname$release$shared_ext$major $libname$shared_ext'
++  soname_spec='$libname$release$shared_ext$major'
++  dynamic_linker='mlibc ld.so'
++  shlibpath_var=LD_LIBRARY_PATH
++  shlibpath_overrides_runpath=no
++  hardcode_into_libs=yes
++  ;;
++
+ *-mlibc)
+   version_type=linux # correct to gnu/linux during the next big refactor
+   need_lib_prefix=no
+@@ -3678,6 +3690,10 @@ linux* | k*bsd*-gnu | kopensolaris*-gnu | gnu*)
+   lt_cv_deplibs_check_method=pass_all
+   ;;
+ 
++polaris*)
++  lt_cv_deplibs_check_method=pass_all
++  ;;
++
+ netbsd* | netbsdelf*-gnu)
+   if echo __ELF__ | $CC -E - | $GREP __ELF__ > /dev/null; then
+     lt_cv_deplibs_check_method='match_pattern /lib[[^/]]+(\.so\.[[0-9]]+\.[[0-9]]+|_pic\.a)$'
+@@ -4565,6 +4581,8 @@ m4_if([$1], [CXX], [
+ 	;;
+       *-mlibc)
+ 	;;
++      polaris*)
++	;;
+       *qnx* | *nto*)
+         # QNX uses GNU C++, but need to define -shared option too, otherwise
+         # it will coredump.
+@@ -4927,6 +4945,12 @@ m4_if([$1], [CXX], [
+       _LT_TAGVAR(lt_prog_compiler_static, $1)='-static'
+       ;;
+ 
++    polaris*)
++      _LT_TAGVAR(lt_prog_compiler_wl, $1)='-Wl,'
++      _LT_TAGVAR(lt_prog_compiler_pic, $1)='-fPIC'
++      _LT_TAGVAR(lt_prog_compiler_static, $1)='-static'
++      ;;
++
+     *nto* | *qnx*)
+       # QNX uses GNU C++, but need to define -shared option too, otherwise
+       # it will coredump.
+@@ -5413,6 +5437,11 @@ _LT_EOF
+ 	_LT_TAGVAR(archive_expsym_cmds, $1)='$CC -shared $pic_flag $libobjs $deplibs $compiler_flags $wl-soname $wl$soname $wl-retain-symbols-file $wl$export_symbols -o $lib'
+       ;;
+ 
++    polaris*)
++	_LT_TAGVAR(archive_cmds, $1)='$CC -shared $pic_flag $libobjs $deplibs $compiler_flags $wl-soname $wl$soname -o $lib'
++	_LT_TAGVAR(archive_expsym_cmds, $1)='$CC -shared $pic_flag $libobjs $deplibs $compiler_flags $wl-soname $wl$soname $wl-retain-symbols-file $wl$export_symbols -o $lib'
++      ;;
++
+     netbsd* | netbsdelf*-gnu)
+       if echo __ELF__ | $CC -E - | $GREP __ELF__ >/dev/null; then
+ 	_LT_TAGVAR(archive_cmds, $1)='$LD -Bshareable $libobjs $deplibs $linker_flags -o $lib'
+@@ -5959,6 +5988,9 @@ _LT_EOF
+     *-mlibc)
+       ;;
+ 
++    polaris*)
++      ;;
++
+     netbsd* | netbsdelf*-gnu)
+       if echo __ELF__ | $CC -E - | $GREP __ELF__ >/dev/null; then
+ 	_LT_TAGVAR(archive_cmds, $1)='$LD -Bshareable -o $lib $libobjs $deplibs $linker_flags'  # a.out
+@@ -7266,6 +7298,10 @@ if test yes != "$_lt_caught_CXX_error"; then
+         _LT_TAGVAR(ld_shlibs, $1)=yes
+ 	;;
+ 
++      polaris*)
++        _LT_TAGVAR(ld_shlibs, $1)=yes
++	;;
++
+       netbsd*)
+         if echo __ELF__ | $CC -E - | $GREP __ELF__ >/dev/null; then
+ 	  _LT_TAGVAR(archive_cmds, $1)='$LD -Bshareable  -o $lib $predep_objects $libobjs $deplibs $postdep_objects $linker_flags'
+diff --git a/m4/ltdl.m4 b/m4/ltdl.m4
+index c7790ffd..94dd2548 100644
+--- a/m4/ltdl.m4
++++ b/m4/ltdl.m4
+@@ -498,6 +498,9 @@ AC_CACHE_CHECK([whether deplibs are loaded by dlopen],
+   *-mlibc)
+     lt_cv_sys_dlopen_deplibs=yes
+     ;;
++  polaris*)
++    lt_cv_sys_dlopen_deplibs=yes
++    ;;
+   netbsd* | netbsdelf*-gnu)
+     lt_cv_sys_dlopen_deplibs=yes
+     ;;

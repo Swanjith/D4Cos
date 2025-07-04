@@ -1,0 +1,46 @@
+name=gcc
+version=15.1.0
+revision=1
+tarball_url="https://ftpmirror.gnu.org/gnu/gcc/gcc-${version}/gcc-${version}.tar.xz"
+tarball_blake2b="a902ce99db4e93615879e435bcd0b96d5a16ea0af42598ca0e6d12913b2ce3651a98574c3264b2717b848e6b5a823b403ccca0adde463938d5b41aa3f1da0d34"
+source_hostdeps="automake autoconf-2.69 libtool pkg-config"
+source_imagedeps="git"
+hostdeps="gcc autoconf-2.69 automake libtool pkg-config"
+deps="core-libs binutils zlib gmp mpfr mpc gettext"
+imagedeps="build-essential"
+
+prepare() {
+    for i in "${base_dir}"/patches/gcc-host/*; do
+        patch -p1 < "$i"
+    done
+
+    autotools_recursive_regen -I"$(realpath ./config)"
+
+    cp -pv /usr/local/share/libtool/build-aux/{config.sub,config.guess,install-sh} libiberty/
+}
+
+build() {
+        CXXFLAGS_FOR_TARGET="$CFLAGS" \
+        CFLAGS_FOR_TARGET="$CFLAGS" \
+    autotools_configure \
+        --target=${OS_TRIPLET} \
+        --with-sysroot=/ \
+        --with-build-sysroot=${sysroot_dir} \
+        --enable-languages=c,c++,lto \
+        --enable-initfini-array \
+        --disable-multilib \
+        --with-system-zlib \
+        --enable-host-shared
+
+    make -j${parallelism} all-gcc
+}
+
+package() {
+    DESTDIR="${dest_dir}" make install-gcc
+
+    ln -s gcc "${dest_dir}${prefix}"/bin/cc
+    # Remove static libraries
+    rm -rf "${dest_dir}${prefix}"/lib/*.a
+
+    post_package_strip
+}
