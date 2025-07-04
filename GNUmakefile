@@ -3,10 +3,10 @@ CONFIG_TARGET ?= pc
 
 .PHONY: all
 all:
-	rm -f polaris.iso
-	$(MAKE) polaris.iso
+	rm -f D4Cos.iso
+	$(MAKE) D4Cos.iso
 
-polaris.iso: jinx
+D4Cos.iso: jinx
 	./build-support/makeiso.sh
 
 jinx:
